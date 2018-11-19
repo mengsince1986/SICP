@@ -91,5 +91,81 @@ The essence of this change is the emergence of what might best be called **proce
               
             Thus, any powerful programming language should be able to describe primitive data and primitive procedures and should have methods for combining and abstracting procedures and data.  
   
+    * 1.1.1 Expressions  
+        * What are combinations?  
+              
+            ```lisp  
+            (+ 137 349)   
+            ;486   
+            (- 1000 334)   
+            ;666   
+            (* 5 99)   
+            ;495   
+            (/ 10 5)   
+            ;2   
+            (+ 2.7 10)   
+            ;12.7   
+            ```  
+            Expressions such as these, formed by delimiting a list of expressions within parentheses in order to denote procedure application, are called _**combinations**_.   
+              
+            The leftmost element in the list is called the _**operator**_, and the other elements are called _**operands**_. The value of a combination is obtained by applying the procedure specified by the operator to the _**arguments**_ that are the values of the operands.  
+  
+            * What is prefix notation?  
+                  
+                The convention of placing the operator to the left of the operands is known as _**prefix notation**_.  
+                  
+                Prefix notation has several advantages:  
+                  
+                * It can accommodate procedures that may take an arbitrary number of arguments. No ambiguity can arise, because the operator is always the leftmost element and the entire combination is delimited by the parentheses;  
+                ```lisp  
+                (+ 21 35 12 7)   
+                ;75   
+                (* 25 4 12)   
+                ;1200  
+                ```  
+  
+                * It extends in a straightforward way to allow combinations to be _nested_, There is no limit (in principle) to the depth of such nesting and to the overall complexity of the expressions that the Lisp interpreter can evaluate.   
+                ```lisp  
+                (+ (* 3 (+ (* 2 4) (+ 3 5))) (+ (- 10 7) 6))  
+                ```  
+  
+        * What is a read-eval-print loop?  
+              
+            Even with complex expressions, the interpreter always operates in the same basic cycle: It reads an expression from the terminal, evaluates the expression, and prints the result. This mode of operation is often expressed by saying that the interpreter runs in a _**read-eval-print loop**_.  
+  
+    * 1.1.2 Naming and the Environment  
+        * How are things named in the Scheme dialect of Lisp?  
+              
+            In the Scheme dialect of Lisp, we name things with **define**. Typing   
+            ```lisp  
+            (define size 2)   
+            ```  
+            causes the interpreter to associate the value 2 with the name **size**. Once the name **size** has been associated with the number 2, we can refer to the value 2 by name:   
+            ```lisp  
+            size   
+            ;2   
+            (* 5 size)   
+            ;10   
+            ```  
+  
+            * What does `define` do in Lisp?  
+                  
+                Here are further examples of the use of define:   
+                ```lisp  
+                (define pi 3.14159)  
+                (define radius 10)  
+                (* pi (* radius radius))  
+                ;314.159  
+                (define circumference (* 2 pi radius)) circumference  
+                ;62.8318   
+                ```  
+                `Define` is our language’s simplest means of abstraction, for it allows us to use simple names to refer to the results of compound operations, such as the circumference computed above.  
+  
+        * What is environment?  
+              
+            It should be clear that the possibility of associating values with symbols and later retrieving them means that the interpreter must maintain some sort of memory that keeps track of the name-object pairs. This memory is called the _**environment**_ (more precisely the _**global environment**_, since we will see later that a computation may involve a number of different environments).  
+  
+    * 1.1.3 Evaluating Combinations  
+  
 [1]: https://en.wikipedia.org/wiki/Hal_Abelson  
 [2]: https://en.wikipedia.org/wiki/Gerald_Jay_Sussman  
