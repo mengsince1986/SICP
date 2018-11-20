@@ -1,44 +1,44 @@
 # **Structure and Interpretation of Computer Programs**  
   
-## Authors  
+## Intro  
   
-### Harold Abelson  
+### Authors  
   
-Link: [en.wikipedia.org/wiki/Hal_Abelson][1]  
+* Harold Abelson  
+    Link: [en.wikipedia.org/wiki/Hal_Abelson][1]  
   
-### Gerald Jay Sussman  
+* Gerald Jay Sussman  
+    Link: [en.wikipedia.org/wiki/Gerald_Jay_Sussman][2]  
   
-Link: [en.wikipedia.org/wiki/Gerald_Jay_Sussman][2]  
+* Julie Sussman  
   
-### Julie Sussman  
-  
-## Alan J. Perlis’ words  
+### Alan J. Perlis’ words  
   
 “Above all, I hope we don’t become missionaries. Don’t feel as if you’re Bible salesmen. The world has too many of those already. What you know about computing other people will learn. **Don’t feel as if the key to successful computing is only in your hands. What’s in your hands, I think and hope, is intelligence: the ability to see the machine as more than when you were first led up to it, that you can make it more.**”  
   
-## Foreward  
+### Foreward  
   
-### What matters in learning programming?  
+* What matters in learning programming?  
+      
+    To appreciate programming as an intellectual activity in its own right you must turn to computer programming; you must read and write computer programs -- many of them. It doesn’t matter much what the programs are about or what applications they serve. What does matter is how well they perform and how smoothly they fit with other programs in the creation of still greater programs.  
   
-To appreciate programming as an intellectual activity in its own right you must turn to computer programming; you must read and write computer programs -- many of them. It doesn’t matter much what the programs are about or what applications they serve. What does matter is how well they perform and how smoothly they fit with other programs in the creation of still greater programs.  
+* What are the three foci of phenomena in this book?  
+      
+    Our traffic with the subject matter of this book involves us with three foci of phenomena: the human mind, collections of computer programs, and the computer.  
   
-### What are the three foci of phenomena in this book?  
+* What is the relationship between the human mind and computer programs?  
+      
+    Every computer program is a model, hatched in the mind, of a real or mental process. These processes, arising from human experience and thought, are huge in number, intricate in detail, and at any time only partially understood. They are modeled to our permanent satisfaction rarely by our computer programs. Thus even though our programs are carefully handcrafted discrete collections of symbols, mosaics of interlocking functions, they continually evolve: we change them as our perception of the model deepens, enlarges, generalizes until the model ultimately attains a metastable place within still another model with which we struggle. The source of the exhilaration associated with computer programming is the continual unfolding within the mind and on the computer of mechanisms expressed as programs and the explosion of perception they generate.   
+      
+    *If art interprets our dreams, the computer executes them in the guise of programs!*  
   
-Our traffic with the subject matter of this book involves us with three foci of phenomena: the human mind, collections of computer programs, and the computer.  
+### Preface to the First Edition  
   
-### What is the relationship between the human mind and computer programs?  
-  
-Every computer program is a model, hatched in the mind, of a real or mental process. These processes, arising from human experience and thought, are huge in number, intricate in detail, and at any time only partially understood. They are modeled to our permanent satisfaction rarely by our computer programs. Thus even though our programs are carefully handcrafted discrete collections of symbols, mosaics of interlocking functions, they continually evolve: we change them as our perception of the model deepens, enlarges, generalizes until the model ultimately attains a metastable place within still another model with which we struggle. The source of the exhilaration associated with computer programming is the continual unfolding within the mind and on the computer of mechanisms expressed as programs and the explosion of perception they generate.   
-  
-*If art interprets our dreams, the computer executes them in the guise of programs!*  
-  
-## Preface to the First Edition  
-  
-### What is computer science/revolution?  
-  
-Underlying our approach to this subject is our conviction that “computer science” is not a science and that its significance has little to do with computers. *The computer revolution is a revolution in the way we think and in the way we express what we think*.   
-  
-The essence of this change is the emergence of what might best be called **procedural epistemology** -- the study of the structure of knowledge from an imperative point of view, as opposed to the more declarative point of view taken by classical mathematical subjects. *Mathematics provides a framework for dealing precisely with notions of “what is.” Computation provides a framework for dealing precisely with notions of “how to”*.  
+* What is computer science/revolution?  
+      
+    Underlying our approach to this subject is our conviction that “computer science” is not a science and that its significance has little to do with computers. *The computer revolution is a revolution in the way we think and in the way we express what we think*.   
+      
+    The essence of this change is the emergence of what might best be called **procedural epistemology** -- the study of the structure of knowledge from an imperative point of view, as opposed to the more declarative point of view taken by classical mathematical subjects. *Mathematics provides a framework for dealing precisely with notions of “what is.” Computation provides a framework for dealing precisely with notions of “how to”*.  
   
 ## Chapter 1  
   
@@ -129,7 +129,7 @@ The essence of this change is the emergence of what might best be called **proce
                 (+ (* 3 (+ (* 2 4) (+ 3 5))) (+ (- 10 7) 6))  
                 ```  
   
-        * What is a read-eval-print loop?  
+        * What is a read-eval-print(repl) loop?  
               
             Even with complex expressions, the interpreter always operates in the same basic cycle: It reads an expression from the terminal, evaluates the expression, and prints the result. This mode of operation is often expressed by saying that the interpreter runs in a _**read-eval-print loop**_.  
   
@@ -166,6 +166,299 @@ The essence of this change is the emergence of what might best be called **proce
             It should be clear that the possibility of associating values with symbols and later retrieving them means that the interpreter must maintain some sort of memory that keeps track of the name-object pairs. This memory is called the _**environment**_ (more precisely the _**global environment**_, since we will see later that a computation may involve a number of different environments).  
   
     * 1.1.3 Evaluating Combinations  
+        * What are the general rules for evaluating combinations?  
+              
+            To evaluate a combination, do the following:   
+              
+            1. Evaluate the subexpressions of the combination.   
+            2. Apply the procedure that is the value of the leftmost subexpression (the operator) to the arguments that are the values of the other subexpressions (the operands).   
+              
+            The evaluation rule is _recursive_ in nature; that is, it includes, as one of its steps, the need to invoke the rule itself.  
+  
+        * How can recursion be used to express the process of a deeply nested combination?  
+              
+            For example, evaluating   
+            ```lisp  
+            (* (+ 2 (* 4 6))  
+               (+ 3 5 7))  
+            ```  
+            requires that the evaluation rule be applied to four different combinations. We can obtain a picture of this process by representing the combination in the form of a tree, as shown in figure 1.1.  
+              
+            ![figure 1.1][3]  
+                
+            Each combination is represented by a node with branches corresponding to the operator and the operands of the combination stemming from it. The terminal nodes (that is, nodes with no branches stemming from them) represent either operators or numbers.   
+              
+            In general, we shall see that recursion is a very powerful technique for dealing with hierarchical, treelike objects. In fact, the “percolate values upward” form of the evaluation rule is an example of a general kind of process known as _**tree accumulation**_.  
+  
+        * What are **_special forms_**?  
+              
+            Notice that the evaluation rule given above does not handle definitions.   
+              
+            For instance, evaluating `(define x 3)` does not apply `define` to two arguments, one of which is the value of the symbol x and the other of which is 3, since the purpose of the `define` is precisely to associate x with a value. (That is, `(define x 3)` is not a combination.)   
+            Such exceptions to the general evaluation rule are called _**special forms**_.  
+  
+    * 1.1.4 Compound Procedures  
+        * What are procedure definitions?  
+              
+            _**procedure definitions**_, a much more powerful abstraction technique by which a compound operation can be given a name and then referred to as a unit.  
+  
+        * How to define a compound procedure in Lisp?  
+              
+            We begin by examining how to express the idea of “squaring”. This is expressed in our language as:  
+            ```lisp  
+            (define (square x) (* x x))  
+            ```  
+            We can understand this in the following way:   
+              
+            >(define (square  x)        (*         x     x))  
+              ↑        ↑     ↑          ↑         ↑     ↑  
+             To      square something, multiply   it by itself.  
+              
+            We have here a _**compound procedure**_, which has been given the name square. The procedure represents the operation of multiplying something by itself. **The thing to be multiplied is given a local name, x, which plays the same role that a pronoun plays in natural language**. Evaluating the definition creates this compound procedure and associates it with the name square.  
+  
+        * What is the general form of a procedure definition?  
+              
+            The general form of a procedure definition is   
+              
+            >(define (<name> <formal parameters>) <body>)  
+              
+            The <_name_> is a symbol to be associated with the procedure definition in the environment. The <_formal parameters_> are the names used within the body of the procedure to refer to the corresponding arguments of the procedure. The <_body_> is an expression that will yield the value of the procedure application when the formal parameters are replaced by the actual arguments to which the procedure is applied. The <_name_> and the <_formal parameters_> are grouped within parentheses, just as they would be in an actual call to the procedure being defined.  
+  
+        * What can a compound procedure be used for?  
+              
+            Having defined square, we can now use it:  
+               
+            ```lisp  
+            (square 21)   
+            ;441   
+            ```  
+              
+            We can also use `square` as a building block in defining other procedures and easily define a procedure sum-of-squares that, given any two numbers as arguments, produces the sum of their squares:   
+              
+            ```lisp  
+            (define (sum-of-squares x y)  
+              (+ (square x) (square y)))  
+              
+            (sum-of-squares 3 4)  
+            ;25  
+            ```  
+              
+            Now we can use `sum-of-squares` as a building block in constructing further procedures:   
+              
+            ```lisp  
+            (define (f a)  
+              (sum-of-squares (+ a 1) (* a 2)))  
+              
+            (f 5)   
+            ;136   
+            ```  
+  
+    * 1.1.5 The Substitution Model for Procedure Application  
+        * What is **_substitution model_** for procedure application?  
+            Link: [/Local/Google Drive/Learning/Book/Structure and Interpretation of Computer Programs/SICP Notes/SICP notes.itmz][4]  
+              
+            We can assume that the mechanism for applying primitive procedures to arguments is built into the interpreter. For compound procedures, the application process is as follows:   
+              
+            >To apply a compound procedure to arguments, evaluate the body of the procedure with each formal parameter replaced by the corresponding argument.   
+              
+            To illustrate this process, let’s evaluate the combination   
+              
+            ```lisp  
+            (f 5)  
+            ```  
+              
+            We begin by retrieving the body of f:   
+              
+            ```lisp  
+            (sum-of-squares (+ a 1) (* a 2))  
+            ```  
+              
+            Then we replace the formal parameter a by the argument 5:  
+              
+            ```lisp  
+            (sum-of-squares (+ 5 1) (* 5 2))   
+            ```  
+              
+            Thus the problem reduces to the evaluation of a combination with two operands and an operator sum-of-squares. Evaluating this combination involves three subproblems. We must evaluate the operator to get the procedure to be applied, and we must evaluate the operands to get the arguments. Now (+ 5 1) produces 6 and (* 5 2) produces 10, so we must apply the sum-of-squares procedure to 6 and 10. These values are substituted for the formal parameters x and y in the body of sum-of-squares, reducing the expression to   
+              
+            ```lisp  
+            (+ (square 6) (square 10))  
+            ```  
+              
+            If we use the definition of square, this reduces to   
+              
+            ```lisp  
+            (+ (* 6 6) (* 10 10))  
+            ```  
+              
+            which reduces by multiplication to  
+              
+            ```lisp  
+            (+ 36 100)  
+            ```  
+              
+            and finally to  
+              
+            ```lisp  
+            136   
+            ```  
+              
+            The process we have just described is called the _**substitution model**_ for procedure application.  
+  
+        * Applicative Order versus normal order  
+            * What are **_normal-order evaluation_** and **_applicative-order evaluation_**?  
+                  
+                According to the description of evaluation given in section 1.1.3, **the interpreter first evaluates the operator and operands and then applies the resulting procedure to the resulting arguments**.   
+                  
+                This is not the only way to perform evaluation. An alternative evaluation model would not evaluate the operands until their values were needed. Instead **it would first substitute operand expressions for parameters until it obtained an expression involving only primitive operators, and would then perform the evaluation**. If we used this method, the evaluation of   
+                  
+                ```lisp  
+                (f 5)   
+                ```  
+                  
+                would proceed according to the sequence of expansions   
+                  
+                ```lisp  
+                (sum-of-squares (+ 5 1) (* 5 2))  
+                (+ (square (+ 5 1))      (square (* 5 2))  )  
+                (+ (* (+ 5 1) (+ 5 1))   (* (* 5 2) (* 5 2)))  
+                ```  
+                  
+                followed by the reductions   
+                  
+                ```lisp  
+                (+         (* 6 6)             (* 10 10))  
+                (+           36                   100)  
+                ;136  
+                ```  
+                  
+                This alternative “fully expand and then reduce” evaluation method is known as _**normal-order evaluation**_, in contrast to the “evaluate the arguments and then apply” method that the interpreter actually uses, which is called _**applicative-order evaluation**_.  
+  
+            * When will normal-order and applicative-order evaluation produce the same value?  
+                  
+                It can be shown that, for procedure applications that can be modeled using substitution (including all the procedures in the first two chapters of this book) and that yield legitimate values, normal-order and applicative-order evaluation produce the same value. (See exercise 1.5 for an instance of an “illegitimate” value where normal-order and applicative-order evaluation do not give the same result.)  
+  
+            * Why does Lisp use applicative order?  
+                  
+                Lisp uses applicative-order evaluation, partly because of the additional efficiency obtained from avoiding multiple evaluations of expressions such as those illustrated with (+ 5 1) and (* 5 2) above and, more significantly, because normal-order evaluation becomes much more complicated to deal with when we leave the realm of procedures that can be modeled by substitution.  
+  
+    * 1.1.6 Conditional Expressions and Predicates  
+        * What is case analysis?  
+              
+            The expressive power of the class of procedures that we can define at this point is very limited, because we have no way to _make tests and to perform different operations depending on the result of a test_. For instance, we cannot define a procedure that computes the absolute value of a number by testing whether the number is positive, negative, or zero and taking different actions in the different cases according to the rule   
+              
+             ![][5]    
+              
+            This construct is called a _**case analysis**_.  
+  
+        * How does conditional expression `cond` work?  
+              
+            there is a special form in Lisp for notating such a case analysis. It is called `cond` (which stands for “conditional”), and it is used as follows:   
+              
+            ```lisp  
+            (define (abs x)  
+              (cond ((> x 0) x)  
+                    ((= x 0) 0)  
+                    ((< x 0) (- x))))  
+            ```  
+  
+            * What is the general form of a conditional expression?  
+                  
+                The general form of a conditional expression is   
+                  
+                >(cond (<_p1_ > <_e1_ >)   
+                       (<_p2_ > <_e2_ >)   
+                       ...  
+                       (<_p_n> <_e_n>))   
+                  
+                consisting of the symbol `cond` followed by parenthesized pairs of expressions (<_p_> <_e_>) called _**clauses**_. The first expression in each pair is a _**predicate**_ -- _an expression whose value is interpreted as either true or false_.  
+  
+            * How are `cond` expressions evaluated?  
+                  
+                Conditional expressions are evaluated as follows.   
+                The predicate <_p1_ > is evaluated first. If its value is false,   
+                then <_p2_> is evaluated. If <_p2_>’s value is also false,   
+                then <_p3_> is evaluated.   
+                This process continues until a predicate is found whose value is true, in which case the interpreter returns the value of the corresponding _**consequent expression**_ <_e_> of the clause as the value of the conditional expression.   
+                If none of the <_p_>’s is found to be true, the value of the `cond` is `undefined`.  
+  
+        * How is `else` used in `cond` expressions?  
+              
+            Another way to write the absolute-value procedure is  
+              
+            ```lisp  
+            (define (abs x)  
+              (cond ((< x 0) (- x))  
+                    (else x)))  
+            ```  
+              
+            which could be expressed in English as “If _x_ is less than zero return - _x_; otherwise return _x_.” **`Else` is a special symbol that can be used in place of the <_p_> in the final clause of a `cond`. This causes the `cond` to return as its value the value of the corresponding <_e_> whenever all previous clauses have been bypassed.**   
+            _**In fact, any expression that always evaluates to a true value could be used as the <_p_> here**_.  
+  
+        * How does conditional expression `if` work?  
+              
+            Here is yet another way to write the absolute-value procedure:   
+              
+            ```lisp  
+            (define (abs x)  
+              (if (< x 0)  
+                  (- x)   
+                  x))  
+            ```  
+               
+            This uses the special form `if`, **a restricted type of conditional that can be used when there are precisely two cases in the case analysis**.  
+  
+            * What is the general form of an `if` expression?  
+                  
+                The general form of an if expression is   
+                  
+                >(if <_predicate_> <_consequent_> <_alternative_>)  
+  
+            * How are `if` expressions evaluated?  
+                  
+                To evaluate an if expression, the interpreter starts by evaluating the <_predicate_> part of the expression. If the <_predicate_> evaluates to a true value, the interpreter then evaluates the <_consequent_> and returns its value. Otherwise it evaluates the <_alternative_> and returns its value.  
+  
+        * How do predicates work?  
+              
+            The word _**predicate**_ is used for procedures that return true or false, as well as for expressions that evaluate to true or false.  
+  
+            * What are the **primitive predicates**?  
+                  
+                The absolute-value procedure `abs` makes use of the **primitive predicates >, <, and =**. These take two numbers as arguments and test whether the first number is, respectively, greater than, less than, or equal to the second number, returning true or false accordingly.   
+                  
+                `abs` also uses the “minus” operator `-`, which, **when used with a single operand, as in (- x), indicates negation**.  
+  
+            * What are the three frequently used **compound predicates**?  
+                  
+                In addition to primitive predicates such as <, =, and >, there are **logical composition operations**, **which enable us to construct compound predicates.** The three most frequently used are these:   
+                  
+                (and <_e1_> ... <_e_n>)   
+                The interpreter evaluates the expressions <_e_> one at a time, in **left-to-right order**. **If any <_e_> evaluates to false, the value of the `and` expression is false, and the rest of the <_e_>’s are not evaluated**. If all <_e_>’s evaluate to true values, the value of the `and` expression is the value of the last one.   
+                e.g. the condition that a number _x_ be in the range 5 < _x_ < 10 may be expressed as   
+                ```lisp  
+                (and (> x 5) (< x 10))  
+                ```  
+                  
+                (or <_e1_> ... <_e_n>)   
+                The interpreter evaluates the expressions <_e_> one at a time, in **left-to-right order**. **If any <_e_> evaluates to a true value, that value is returned as the value of the `or` expression, and the rest of the <_e_>’s are not evaluated**. If all <_e_>’s evaluate to false, the value of the `or` expression is false.   
+                  
+                (not <_e_>)  
+                The value of a not expression is true when the expression <_e_> evaluates to false, and false otherwise.   
+                e.g. we can define a predicate to test whether one number is greater than or equal to another as   
+                ```lisp  
+                (define (>= x y)  
+                  (or (> x y) (= x y)))  
+                ```   
+                or alternatively as   
+                ```lisp  
+                (define (>= x y)  
+                  (not (< x y)))  
+                ```  
+                  
+                **Notice that `and` and `or` are special forms, not procedures, because the subexpressions are not necessarily all evaluated. `Not` is an ordinary procedure.**  
   
 [1]: https://en.wikipedia.org/wiki/Hal_Abelson  
 [2]: https://en.wikipedia.org/wiki/Gerald_Jay_Sussman  
+[3]: hhu.png  
+[4]: ithoughts://open?path=/Local/Google%20Drive/Learning/Book/Structure%20and%20Interpretation%20of%20Computer%20Programs/SICP%20Notes/SICP%20notes.itmz&topic=845D1360-1B3F-4380-A75B-706214358A9D  
+[5]: erb.png  
