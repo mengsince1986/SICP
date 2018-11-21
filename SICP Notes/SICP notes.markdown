@@ -310,7 +310,7 @@
                   
                 According to the description of evaluation given in section 1.1.3, **the interpreter first evaluates the operator and operands and then applies the resulting procedure to the resulting arguments**.   
                   
-                This is not the only way to perform evaluation. An alternative evaluation model would not evaluate the operands until their values were needed. Instead **it would first substitute operand expressions for parameters until it obtained an expression involving only primitive operators, and would then perform the evaluation**. If we used this method, the evaluation of   
+                This is not the only way to perform evaluation. **An alternative evaluation model would not evaluate the operands until their values were needed**. Instead **it would first substitute operand expressions for parameters until it obtained an expression involving only primitive operators, and would then perform the evaluation**. If we used this method, the evaluation of   
                   
                 ```lisp  
                 (f 5)   
@@ -382,18 +382,18 @@
                 This process continues until a predicate is found whose value is true, in which case the interpreter returns the value of the corresponding _**consequent expression**_ <_e_> of the clause as the value of the conditional expression.   
                 If none of the <_p_>’s is found to be true, the value of the `cond` is `undefined`.  
   
-        * How is `else` used in `cond` expressions?  
-              
-            Another way to write the absolute-value procedure is  
-              
-            ```lisp  
-            (define (abs x)  
-              (cond ((< x 0) (- x))  
-                    (else x)))  
-            ```  
-              
-            which could be expressed in English as “If _x_ is less than zero return - _x_; otherwise return _x_.” **`Else` is a special symbol that can be used in place of the <_p_> in the final clause of a `cond`. This causes the `cond` to return as its value the value of the corresponding <_e_> whenever all previous clauses have been bypassed.**   
-            _**In fact, any expression that always evaluates to a true value could be used as the <_p_> here**_.  
+            * How is `else` used in `cond` expressions?  
+                  
+                Another way to write the absolute-value procedure is  
+                  
+                ```lisp  
+                (define (abs x)  
+                  (cond ((< x 0) (- x))  
+                        (else x)))  
+                ```  
+                  
+                which could be expressed in English as “If _x_ is less than zero return - _x_; otherwise return _x_.” **`Else` is a special symbol that can be used in place of the <_p_> in the final clause of a `cond`. This causes the `cond` to return as its value the value of the corresponding <_e_> whenever all previous clauses have been bypassed.**   
+                _**In fact, any expression that always evaluates to a true value could be used as the <_p_> here**_.  
   
         * How does conditional expression `if` work?  
               
@@ -417,6 +417,10 @@
             * How are `if` expressions evaluated?  
                   
                 To evaluate an if expression, the interpreter starts by evaluating the <_predicate_> part of the expression. If the <_predicate_> evaluates to a true value, the interpreter then evaluates the <_consequent_> and returns its value. Otherwise it evaluates the <_alternative_> and returns its value.  
+  
+            * What is the difference between `if` and `cond`?  
+                  
+                A minor difference between `if` and `cond` is that the <_e_> part of each `cond` clause may be **a sequence of expressions**. If the corresponding <_p_> is found to be true, the expressions <_e_> are evaluated in sequence and the value of the final expression in the sequence is returned as the value of the cond. In an if expression, however, **the <_consequent_> and <_alternative_> must be single expressions**.  
   
         * How do predicates work?  
               
@@ -457,8 +461,36 @@
                   
                 **Notice that `and` and `or` are special forms, not procedures, because the subexpressions are not necessarily all evaluated. `Not` is an ordinary procedure.**  
   
+    * 1.1.7 Example: Square Roots by Newton’s Method  
+        * What is the difference between mathematical functions and computer procedures?  
+              
+            **Procedures**, as introduced above, are much like ordinary mathematical functions. They specify a value that is determined by one or more parameters. But there is an important difference between mathematical functions and computer procedures. **_Procedures must be effective_**.   
+              
+            The contrast between function and procedure is a reflection of the general distinction between describing properties of things and describing how to do things, or, as it is sometimes referred to, the distinction between **_declarative knowledge_** and **_imperative knowledge_**. **In mathematics we are usually concerned with declarative (what is) descriptions, whereas in computer science we are usually concerned with imperative (how to) descriptions**.   
+              
+            Declarative and imperative descriptions are intimately related, as indeed are mathematics and computer science. For instance, **to say that the answer produced by a program is “correct” is to make a declarative statement about the program**. There is a large amount of research aimed at establishing techniques for proving that programs are correct, and much of the technical difficulty of this subject has to do with negotiating the transition between imperative statements (from which programs are constructed) and declarative statements (which can be used to deduce things). **In a related vein, an important current area in programming-language design is the exploration of so-called very high-level languages, in which one actually programs in terms of declarative statements. The idea is to make interpreters sophisticated enough so that, given “what is” knowledge specified by the programmer, they can generate “how to” knowledge automatically.** This cannot be done in general, but there are important areas where progress has been made. We shall revisit this idea in chapter 4.  
+  
+        * How to calculate square roots with Newton’s method?  
+              
+            How does one compute square roots? The most common way is to use Newton’s method of successive approximations, which says that **whenever we have a guess _y_ for the value of the square root of a number _x_, we can perform a simple manipulation to get a better guess (one closer to the actual square root) by averaging _y_ with _x_/_y_.** For example, we can compute the square root of 2 as follows. Suppose our initial guess is 1:   
+              
+            ![][6]  
+              
+            Continuing this process, we obtain better and better approximations to the square root.   
+              
+            This square-root algorithm is actually a special case of Newton’s method, which is a general technique for finding roots of equations. The square-root algorithm itself was developed by Heron of Alexandria in the first century A.D..  
+  
+        * How to make Newton’s method a procedure in Lisp?  
+              
+            [../SICP Exercises/exercise 1.1-1.5.scm][7]  
+              
+            [github.com/mengsince1986/SICP/blob/master/SICP Exercises/exercise 1.1-1.5.scm][8]  
+  
 [1]: https://en.wikipedia.org/wiki/Hal_Abelson  
 [2]: https://en.wikipedia.org/wiki/Gerald_Jay_Sussman  
 [3]: hhu.png  
 [4]: ithoughts://open?path=/Local/Google%20Drive/Learning/Book/Structure%20and%20Interpretation%20of%20Computer%20Programs/SICP%20Notes/SICP%20notes.itmz&topic=845D1360-1B3F-4380-A75B-706214358A9D  
 [5]: erb.png  
+[6]: fgi.png  
+[7]: system://open?path=../SICP%20Exercises/exercise%201.1-1.5.scm  
+[8]: https://github.com/mengsince1986/SICP/blob/master/SICP%20Exercises/exercise%201.1-1.5.scm  
