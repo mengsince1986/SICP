@@ -461,6 +461,10 @@
                   
                 **Notice that `and` and `or` are special forms, not procedures, because the subexpressions are not necessarily all evaluated. `Not` is an ordinary procedure.**  
   
+    * Exercise 1.1-1.5  
+          
+        [github.com/mengsince1986/SICP/blob/master/SICP Exercises/exercise 1.1-1.5.scm][6]  
+  
     * 1.1.7 Example: Square Roots by Newton’s Method  
         * What is the difference between mathematical functions and computer procedures?  
               
@@ -474,7 +478,7 @@
               
             How does one compute square roots? The most common way is to use Newton’s method of successive approximations, which says that **whenever we have a guess _y_ for the value of the square root of a number _x_, we can perform a simple manipulation to get a better guess (one closer to the actual square root) by averaging _y_ with _x_/_y_.** For example, we can compute the square root of 2 as follows. Suppose our initial guess is 1:   
               
-            ![][6]  
+            ![][7]  
               
             Continuing this process, we obtain better and better approximations to the square root.   
               
@@ -482,15 +486,21 @@
   
         * How to make Newton’s method a procedure in Lisp?  
               
-            [../SICP Exercises/exercise 1.1-1.5.scm][7]  
+            [../SICP Exercises/exercise 1.1-1.5.scm][8]  
               
-            [github.com/mengsince1986/SICP/blob/master/SICP Exercises/exercise 1.1-1.5.scm][8]  
+            [github.com/mengsince1986/SICP/blob/master/SICP Exercises/exercise 1.1-1.5.scm][9]  
+  
+    * Exercise 1.6-1.8  
+          
+        [github.com/mengsince1986/SICP/blob/master/SICP Exercises/exercise 1.6-1.8.scm][10]  
   
 [1]: https://en.wikipedia.org/wiki/Hal_Abelson  
 [2]: https://en.wikipedia.org/wiki/Gerald_Jay_Sussman  
 [3]: hhu.png  
 [4]: ithoughts://open?path=/Local/Google%20Drive/Learning/Book/Structure%20and%20Interpretation%20of%20Computer%20Programs/SICP%20Notes/SICP%20notes.itmz&topic=845D1360-1B3F-4380-A75B-706214358A9D  
 [5]: erb.png  
-[6]: fgi.png  
-[7]: system://open?path=../SICP%20Exercises/exercise%201.1-1.5.scm  
-[8]: https://github.com/mengsince1986/SICP/blob/master/SICP%20Exercises/exercise%201.1-1.5.scm  
+[6]: https://github.com/mengsince1986/SICP/blob/master/SICP%20Exercises/exercise%201.1-1.5.scm  
+[7]: fgi.png  
+[8]: system://open?path=../SICP%20Exercises/exercise%201.1-1.5.scm  
+[9]: https://github.com/mengsince1986/SICP/blob/master/SICP%20Exercises/exercise%201.1-1.5.scm  
+[10]: https://github.com/mengsince1986/SICP/blob/master/SICP%20Exercises/exercise%201.6-1.8.scm  
