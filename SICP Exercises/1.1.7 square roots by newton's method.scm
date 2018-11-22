@@ -41,3 +41,6 @@
 (define (sqrt x)
   (sqrt-iter 1.0 x))
 
+; Test
+(sqrt 36)
+(sqrt 0.001)
