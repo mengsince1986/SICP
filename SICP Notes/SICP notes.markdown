@@ -494,6 +494,110 @@
           
         [github.com/mengsince1986/SICP/blob/master/SICP Exercises/exercise 1.6-1.8.scm][10]  
   
+    * 1.1.8 Procedures as Black-Box Abstractions  
+        * How is `sqrt` procedure decomposed into a number of subproblems?  
+              
+            Observe that the problem of computing square roots breaks up naturally into a number of subproblems: **how to tell whether a guess is good enough, how to improve a guess, and so on**. Each of these tasks is accomplished by a separate procedure. The entire `sqrt` program can be viewed as a cluster of procedures (shown in figure 1.2) that mirrors the decomposition of the problem into subproblems.   
+               
+            ![][11]  
+                
+            **Figure 1.2:** Procedural decomposition of the sqrt program.  
+  
+        * What is procedural abstraction?  
+              
+            The importance of this decomposition strategy is not simply that one is dividing the program into parts. Rather, it is crucial that each procedure accomplishes an identifiable task that can be used as a module in defining other procedures. For example, when we define the `good-enough?` procedure in terms of square, we are able to regard the square procedure as a “**_black box_**”. We are not at that moment concerned with _how_ the procedure computes its result, only with the fact that it computes the square. The details of how the square is computed can be suppressed, to be considered at a later time. Indeed, as far as the good-enough? procedure is concerned, square is not quite a procedure but rather an abstraction of a procedure, a so-called _**procedural abstraction**_. At this level of abstraction, any procedure that computes the square is equally good.   
+              
+            So **a procedure definition should be able to suppress detail**. The users of the procedure may not have written the procedure themselves, but may have obtained it from another programmer as **_a black box_**. **A user should not need to know how the procedure is implemented in order to use it.**  
+  
+        * Local names  
+            * Why should the meaning of a procedure be independent of the formal parameter names?  
+                  
+                One detail of a procedure’s implementation that should not matter to the user of the procedure is the implementer’s choice of names for the procedure’s formal parameters. Thus, the following procedures should not be distinguishable:   
+                  
+                ```lisp  
+                (define (square x) (* x x))  
+                (define (square y) (* y y))  
+                ```  
+                  
+                This principle -- **_that the meaning of a procedure should be independent of the parameter names used by its author_** -- seems on the surface to be self-evident, but its consequences are profound. **_The simplest consequence is that the parameter names of a procedure must be local to the body of the procedure._** For example, we used `square` in the definition of `good-enough?` in our `square-root` procedure:   
+                  
+                ```lisp  
+                (define (good-enough? guess x)  
+                  (< (abs (- (square guess) x)) 0.001))  
+                ```  
+                  
+                The intention of the author of `good-enough?` is to determine if the square of the first argument is within a given tolerance of the second argument. We see that the author of `good-enough?` used the name `guess` to refer to the first argument and `x` to refer to the second argument. The argument of square is `guess`. If the author of `square` used x (as above) to refer to that argument, we see that the `x` in `good-enough?` must be a different `x` than the one in `square`. Running the procedure square must not affect the value of x that is used by `good-enough?`, because that value of x may be needed by `good-enough?` after `square` is done computing.   
+                  
+                **_If the parameters were not local to the bodies of their respective procedures, then the parameter `x` in `square` could be confused with the parameter `x` in `good-enough?`, and the behavior of `good-enough?` would depend upon which version of `square` we used. Thus, `square` would not be the black box we desired._**  
+  
+            * What is a bound/free variable?  
+                  
+                **A formal parameter of a procedure has a very special role in the procedure definition, in that it doesn’t matter what name the formal parameter has.** Such a name is called a _**bound variable**_, and we say that **the procedure definition _binds_ its formal parameters**. **The meaning of a procedure definition is unchanged if a bound variable is consistently renamed throughout the definition**.   
+                  
+                **If a variable is not bound**, we say that it is _**free**_.   
+                  
+                In the definition of `good-enough?` above, guess and x are bound variables but `<`, `-`, `abs`, and `square` are free. The meaning of `ood-enough?` should be independent of the names we choose for `guess` and `x` so long as they are distinct and different from `<`, `-`, `abs`, and `square`. (If we renamed `guess` to `abs` we would have introduced a bug by _capturing_ the variable `abs`. It would have changed from free to bound.) The meaning of `good-enough?` is not independent of the names of its free variables, however. It surely depends upon the fact (external to this definition) that the symbol `abs` names a procedure for computing the absolute value of a number. `Good-enough?` will compute a different function if we substitute `cos` for `abs` in its definition.  
+  
+            * What is scope  
+                  
+                The set of expressions for which a binding defines a name is called the _**scope**_ of that name. **In a procedure definition, the bound variables declared as the formal parameters of the procedure have the body of the procedure as their scope**.  
+  
+        * Internal definitions and block structure  
+            * What are internal definition and block structure?  
+                  
+                We have one kind of name isolation available to us so far: **The formal parameters of a procedure are local to the body of the procedure**. The square-root program illustrates another way in which we would like to control the use of names. The existing program consists of separate procedures:  
+                  
+                ```lisp  
+                (define (sqrt x)  
+                  (sqrt-iter 1.0 x))  
+                (define (sqrt-iter guess x)  
+                  (if (good-enough? guess x)  
+                       guess   
+                      (sqrt-iter (improve guess x) x)))  
+                (define (good-enough? guess x)  
+                  (< (abs (- (square guess) x)) 0.001))  
+                (define (improve guess x)  
+                  (average guess (/ x guess)))  
+                ```  
+                  
+                The problem with this program is that the only procedure that is important to users of `sqrt` is `sqrt`. The other procedures (`sqrt-iter`, `good-enough?`, and `improve`) only clutter up their minds. They may not define any other procedure called `good-enough?` as part of another program to work together with the square-root program, because `sqrt` needs it. The problem is especially severe in the construction of large systems by many separate programmers. For example, in the construction of a large library of numerical procedures, many numerical functions are computed as successive approximations and thus might have procedures named `good-enough?` and `improve` as auxiliary procedures. **We would like to localize the subprocedures, hiding them inside `sqrt` so that `sqrt` could coexist with other successive approximations, each having its own private `good-enough?` procedure.** To make this possible, we allow a procedure to have **_internal definitions_** that are local to that procedure. For example, in the square-root problem we can write   
+                  
+                ```lisp  
+                (define (sqrt x)  
+                  (define (good-enough? guess x)  
+                    (< (abs (- (square guess) x)) 0.001))  
+                  (define (improve guess x)  
+                    (average guess (/ x guess)))  
+                  (define (sqrt-iter guess x)  
+                    (if (good-enough? guess x)  
+                        guess  
+                        (sqrt-iter (improve guess x) x)))  
+                  (sqrt-iter 1.0 x))  
+                ```  
+                  
+                Such nesting of definitions, called _**block structure**_, is basically the right solution to the simplest name-packaging problem.   
+                  
+                The idea of block structure originated with the programming language **Algol 60**. It appears in most advanced programming languages and is an important tool for helping to organize the construction of large programs.  
+  
+            * What is lexical scoping?  
+                  
+                But there is a better idea lurking here. In addition to internalizing the definitions of the auxiliary procedures, we can simplify them. Since x is bound in the definition of `sqrt`, the procedures `good-enough?`, `improve`, and `sqrt-iter`, which are defined internally to `sqrt`, are in the scope of `x`. Thus, it is not necessary to pass `x` explicitly to each of these procedures. Instead, we allow `x` to be a free variable in the internal definitions, as shown below. Then `x` gets its value from the argument with which the enclosing procedure `sqrt` is called. This discipline is called _**lexical scoping**_.  
+                  
+                ```lisp  
+                (define (sqrt x)  
+                  (define (good-enough? guess)  
+                    (< (abs (- (square guess) x)) 0.001))  
+                  (define (improve guess)  
+                    (average guess (/ x guess)))  
+                  (define (sqrt-iter guess)  
+                    (if (good-enough? guess)  
+                        guess  
+                        (sqrt-iter (improve guess))))  
+                  (sqrt-iter 1.0))  
+                ```  
+                  
+                **Lexical scoping dictates that free variables in a procedure are taken to refer to bindings made by enclosing procedure definitions; that is, they are looked up in the environment in which the procedure was defined**.  
+  
 [1]: https://en.wikipedia.org/wiki/Hal_Abelson  
 [2]: https://en.wikipedia.org/wiki/Gerald_Jay_Sussman  
 [3]: hhu.png  
@@ -504,3 +608,4 @@
 [8]: system://open?path=../SICP%20Exercises/exercise%201.1-1.5.scm  
 [9]: https://github.com/mengsince1986/SICP/blob/master/SICP%20Exercises/exercise%201.1-1.5.scm  
 [10]: https://github.com/mengsince1986/SICP/blob/master/SICP%20Exercises/exercise%201.6-1.8.scm  
+[11]: ncf.png  

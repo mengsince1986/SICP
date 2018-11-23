@@ -37,10 +37,6 @@
 
 ;***********************sqrt procedure**********************
 
-; Finally, we need a way to get started. For instance, we can always guess that the square root of any number is 1:
-(define (sqrt x)
-  (sqrt-iter 1.0 x))
-
 ; Test
 (sqrt 36)
 (sqrt 0.001)
