@@ -598,6 +598,118 @@
                   
                 **Lexical scoping dictates that free variables in a procedure are taken to refer to bindings made by enclosing procedure definitions; that is, they are looked up in the environment in which the procedure was defined**.  
   
+* 1.2 Procedures and the Processes They Generate  
+    * What is a procedure?  
+          
+        A **_procedure_** is a pattern for the _local evolution_ of a computational process. It specifies how each stage of the process is built upon the previous stage. We would like to be able to make statements about the overall, or _global_, behavior of a process whose local evolution has been specified by a procedure.  
+  
+    * 1.2.1 Linear Recursion and Iteration  
+        * How to compute factorials with a linear recursive process?  
+              
+            We begin by considering the factorial function, defined by   
+              
+            >n! = n * (n−1) * (n−2) ... 3 * 2 * 1  
+              
+            There are many ways to compute factorials. One way is to make use of the observation that _n_! is equal to _n_ times (_n_ - 1)! for any positive integer _n_:   
+              
+            >n! = n * [(n−1) * (n−2) ... 3 * 2 * 1] = n * (n−1)!  
+              
+            Thus, we can compute _n_! by computing (_n_ - 1)! and multiplying the result by _n_. If we add the stipulation that 1! is equal to 1, this observation translates directly into a procedure:   
+              
+            ```lisp  
+            (define (factorial n)  
+              (if (= n 1)  
+                  1  
+                  (* n (factorial (- n 1)))))  
+            ```  
+              
+            We can use the substitution model of section 1.1.5 to watch this procedure in action computing 6!, as shown in figure 1.3.   
+              
+             ![][12]  
+                
+            **Figure 1.3:** A linear recursive process for computing 6!.  
+  
+        * How to compute factorials with a linear iterative process?  
+              
+            We could describe a rule for computing _n_! by specifying that we first multiply 1 by 2, then multiply the result by 3, then by 4, and so on until we reach _n_. More formally, we maintain a running **product**, together with a **counter** that counts from 1 up to _n_. We can describe the computation by saying that the counter and the product simultaneously change from one step to the next according to the rule   
+              
+            > product <-- counter * product  
+            counter <-- counter + 1  
+              
+            and stipulating that _n_! is the value of the product when the counter exceeds _n_.  
+              
+            Once again, we can recast our description as a procedure for computing factorials:   
+              
+            ```lisp  
+            (define (factorial n)  
+              (fact-iter 1 1 n))  
+            (define (fact-iter product counter max-count)  
+              (if (> counter max-count)  
+                  product  
+                  (fact-iter (* counter product)  
+                             (+ counter 1)  
+                             max-count)))  
+            ```  
+              
+            In a real program we would probably use the block structure introduced in the last section to hide the definition of `fact-iter`:   
+              
+            ```lisp  
+            (define (factorial n)  
+              (define (iter product counter)  
+                (if (> counter n)  
+                    product  
+                    (iter (* counter product)  
+                          (+ counter 1))))  
+            (iter 1 1))   
+            ```  
+              
+            As before, we can use the substitution model to visualize the process of computing 6!, as shown in figure 1.4.   
+              
+             ![][13]  
+              
+            **Figure 1.4:** A linear iterative process for computing 6!.  
+  
+        * What is the difference between linear recursive process and linear iterative process?  
+            * What is (linear) **recursive process**?  
+                  
+                Consider the first process. The substitution model reveals **a shape of expansion followed by contraction**, indicated by the arrow in figure 1.3. The expansion occurs as the process builds up a chain of _**deferred operations**_ (in this case, a chain of multiplications). The contraction occurs as the operations are actually performed. **This type of process, characterized by a chain of deferred operations, is called a _recursive process_**.   
+                  
+                Carrying out this process requires that the interpreter keep track of the operations to be performed later on. **In the computation of _n_!, the length of the chain of deferred multiplications, and hence the amount of information needed to keep track of it, grows linearly with _n_ (is proportional to _n_), just like the number of steps. Such a process is called a _linear recursive process_**.  
+  
+            * What is (linear) **iterative process**?  
+                  
+                By contrast, **the second process does not grow and shrink. At each step, all we need to keep track of, for any _n_, are the current values of the variables product, counter, and max-count. We call this an _iterative process_**.   
+                  
+                In general, **an iterative process is one whose state can be summarized by a fixed number of _state variables_, together with a fixed rule that describes how the state variables should be updated as the process moves from state to state and an (optional) end test that specifies conditions under which the process should terminate**.   
+                  
+                **In computing _n_!, the number of steps required grows linearly with _n_. Such a process is called a _linear iterative process_**.  
+  
+            * How is information maintained in recursive and iterative processes respectively?  
+                  
+                In the **iterative case**, the program variables provide a complete description of the state of the process at any point. If we stopped the computation between steps, all we would need to do to resume the computation is to supply the interpreter with the values of the three program variables.   
+                  
+                Not so with the **recursive process**. In this case there is some additional “hidden” information, maintained by the interpreter and not contained in the program variables, which indicates “where the process is” in negotiating the chain of **deferred operations**. The longer the chain, the more information must be maintained.   
+                  
+                When we discuss the implementation of procedures on register machines in chapter 5, we will see that any **iterative process** can be realized “in hardware” as a machine that has **a fixed set of registers** and no **auxiliary memor**y. In contrast, realizing a r**ecursive process** requires a machine that uses an auxiliary data structure known as a _**stack**_.  
+  
+        * What is the difference between **recursive process** and **recursive procedure**?  
+              
+            In contrasting iteration and recursion, we must be careful not to confuse the notion of a **recursive _process_** with the notion of a **recursive _procedure_**.   
+              
+            **When we describe a procedure as recursive, we are referring to the syntactic fact that the procedure definition refers (either directly or indirectly) to the procedure itself**. **But when we describe a process as following a pattern that is, say, linearly recursive, we are speaking about how the process evolves, not about the syntax of how a procedure is written**.   
+              
+            It may seem disturbing that we refer to a recursive procedure such as `fact-iter` as generating an iterative process. However, the process really is iterative: Its state is captured completely by its three state variables, and an interpreter need keep track of only three variables in order to execute the process.   
+              
+            One reason that the distinction between process and procedure may be confusing is that most implementations of **common languages** (including Ada, Pascal, and C) are designed in such a way that the interpretation of any recursive procedure consumes an amount of memory that grows with the number of procedure calls, even when the process described is, in principle, iterative. As a consequence, these languages can describe iterative processes only by resorting to special-purpose “**looping constructs**” such as `do`,`repeat`,`until`,`for`, and `while`.   
+              
+            The implementation of **Scheme** we shall consider in chapter 5 does not share this defect. It will execute an iterative process in constant space, even if the iterative process is described by a recursive procedure. An implementation with this property is called _**tail-recursive**_. **With a tail-recursive implementation, iteration can be expressed using the ordinary procedure call mechanism, so that special iteration constructs are useful only as syntactic sugar**.   
+              
+            **_Tail recursion_** has long been known as a compiler optimization trick. A coherent semantic basis for tail recursion was provided by Carl Hewitt (1977), who explained it in terms of the “message-passing” model of computation that we shall discuss in chapter 3. Inspired by this, Gerald Jay Sussman and Guy Lewis Steele Jr. (see Steele 1975) constructed a tail-recursive interpreter for Scheme. Steele later showed how tail recursion is a consequence of the natural way to compile procedure calls (Steele 1977). **The IEEE standard for Scheme requires that Scheme implementations be tail-recursive**.  
+  
+    * Exercise 1.9-1.10  
+          
+        [github.com/mengsince1986/SICP/blob/master/SICP Exercises/exercise 1.9-1.10.scm][14]  
+  
 [1]: https://en.wikipedia.org/wiki/Hal_Abelson  
 [2]: https://en.wikipedia.org/wiki/Gerald_Jay_Sussman  
 [3]: hhu.png  
@@ -609,3 +721,6 @@
 [9]: https://github.com/mengsince1986/SICP/blob/master/SICP%20Exercises/exercise%201.1-1.5.scm  
 [10]: https://github.com/mengsince1986/SICP/blob/master/SICP%20Exercises/exercise%201.6-1.8.scm  
 [11]: ncf.png  
+[12]: sxj.png  
+[13]: iwk.png  
+[14]: https://github.com/mengsince1986/SICP/blob/master/SICP%20Exercises/exercise%201.9-1.10.scm  
