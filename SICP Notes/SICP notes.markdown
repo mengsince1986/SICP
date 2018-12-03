@@ -710,6 +710,128 @@
           
         [github.com/mengsince1986/SICP/blob/master/SICP Exercises/exercise 1.9-1.10.scm][14]  
   
+    * 1.2.2 Tree Recursion  
+        * How to compute Fibonacci numbers with **tree recursion**?  
+              
+            Another common pattern of computation is called _**tree recursion**_. As an example, consider computing the sequence of Fibonacci numbers, in which each number is the sum of the preceding two:   
+            >0, 1, 1, 2, 3, 5, 8, 13, 21, ...  
+              
+            In general, the Fibonacci numbers can be defined by the rule   
+              
+             ![][15]    
+              
+              
+            We can immediately translate this definition into a recursive procedure for computing Fibonacci numbers:   
+              
+            ```lisp  
+            (define (fib n)  
+              (cond ((= n 0) 0)  
+                    ((= n 1) 1)  
+                    (else (+ (fib (- n 1))  
+                             (fib (- n 2))))))  
+            ```  
+              
+             ![][16]    
+              
+            **Figure 1.5:** The tree-recursive process generated in computing (fib 5).   
+              
+              
+            Consider the pattern of this computation. To compute (fib 5), we compute (fib 4) and (fib 3). To compute (fib 4), we compute (fib 3) and (fib 2). In general, the evolved process looks like a tree, as shown in figure 1.5. Notice that **the branches split into two at each level (except at the bottom); this reflects the fact that the fib procedure calls itself twice each time it is invoked**.  
+  
+        * Why is the Fibonacci procedure with tree recursion is inefficient?  
+              
+            This procedure is instructive as a prototypical tree recursion, but it is a terrible way to compute Fibonacci numbers because it does so much redundant computation. Notice in figure 1.5 that the entire computation of (fib 3) — almost half the work — is duplicated. In fact, it is not hard to show that **the number of times the procedure will compute (fib 1) or (fib 0) (the number of leaves in the above tree, in general) is precisely Fib(n + 1)**. To get an idea of how bad this is, one can show that the value of Fib(n) grows exponentially with n. More precisely (see exercise 1.13), Fib(n) is the closest integer to   
+              
+            ![][17]  
+              
+              
+            where  
+              
+            ![][18]  
+              
+              
+            is the golden ratio, which satisfies the equation  
+              
+            ![][19]  
+              
+              
+            Thus, the process uses a number of steps that grows exponentially with the input. On the other hand, the space required grows only linearly with the input, because we need keep track only of which nodes are above us in the tree at any point in the computation. In general, the number of steps required by a tree-recursive process will be proportional to the number of nodes in the tree, while the space required will be proportional to the maximum depth of the tree.  
+  
+        * How to formulate an **iterative process** for computing the Fibonacci numbers?  
+              
+            We can also formulate an iterative process for computing the Fibonacci numbers. The idea is to use a pair of integers _a_ and _b_, initialized to _Fib_(1) = 1 and _Fib_(0) = 0, and to repeatedly apply the simultaneous transformations   
+              
+            >a <-- a + b  
+            b <-- a  
+              
+            **_It is not hard to show that, after applying this transformation _n_ times, _a_ and _b_ will be equal, respectively, to _Fib_(_n_ + 1) and _Fib_(_n_)_**. Thus, we can compute Fibonacci numbers iteratively using the procedure   
+              
+            ```lisp  
+            (define (fib n)  
+              (fib-iter 1 0 n))  
+            (define (fib-iter a b count)  
+              (if (= count 0)  
+                  b  
+                  (fib-iter (+ a b) a (- count 1))))  
+            ```  
+              
+            This second method for computing _Fib_(_n_) is **a linear iteration**. **The difference in number of steps required by the two methods -- one linear in _n_, one growing as fast as _Fib_(_n_) itself -- is enormous, even for small inputs**.  
+  
+        * Are inefficient tree-recursive processes useless?  
+              
+            One should not conclude from this that tree-recursive processes are useless. **When we consider processes that operate on hierarchically structured data rather than numbers, we will find that tree recursion is a natural and powerful tool.** But even in numerical operations, tree-recursive processes can be useful in helping us to understand and design programs. For instance, although the first `fib` procedure is much less efficient than the second one, it is more straightforward, being little more than a translation into Lisp of the definition of the Fibonacci sequence. To formulate the iterative algorithm required noticing that the computation could be recast as an iteration with three state variables.   
+              
+            An example of this was hinted at in section 1.1.3: **The interpreter itself evaluates expressions using a tree-recursive process**.  
+  
+    * Example: Counting change  
+          
+        How many different ways can we make change of $ 1.00, given half-dollars, quarters, dimes, nickels, and pennies? More generally, can we write a procedure to compute the number of ways to change any given amount of money?   
+          
+        This problem has a simple solution as a recursive procedure. Suppose we think of the types of coins available as arranged in some order. Then the following relation holds:   
+          
+        The number of ways to change amount _a_ using _n_ kinds of coins equals  
+          
+        * the number of ways to change amount _a_ using all but the first kind of coin, plus   
+        * the number of ways to change amount _a_ - _d_ using all _n_ kinds of coins, where _d_ is the denomination of the first kind of coin.  
+          
+        **To see why this is true, observe that the ways to make change can be divided into two groups: those that do not use any of the first kind of coin, and those that do. Therefore, the total number of ways to make change for some amount is equal to the number of ways to make change for the amount without using any of the first kind of coin, plus the number of ways to make change assuming that we do use the first kind of coin. But the latter number is equal to the number of ways to make change for the amount that remains after using a coin of the first kind.** ( [stackoverflow.com/questions/27803152/sicp-example-counting-change-cannot-understand][20] )  
+          
+          
+        Thus, we can recursively reduce the problem of changing a given amount to the problem of changing smaller amounts using fewer kinds of coins. Consider this reduction rule carefully, and convince yourself that we can use it to describe an algorithm if we specify the following degenerate cases:   
+          
+        * If _a_ is exactly 0, we should count that as 1 way to make change.  
+        * If _a_ is less than 0, we should count that as 0 ways to make change. If _n_ is 0, we should count that as 0 ways to make change.   
+          
+        We can easily translate this description into a recursive procedure:   
+          
+        ```lisp  
+        (define (count-change amount)  
+          (cc amount 5))  
+        (define (cc amount kinds-of-coins)  
+          (cond ((= amount 0) 1)  
+                ((or (< amount 0) (= kinds-of-coins 0)) 0)  
+                (else (+ (cc amount  
+                             (- kinds-of-coins 1))  
+                         (cc (- amount  
+                                (first-denomination kinds-of-coins))  
+                             kinds-of-coins)))))  
+        (define (first-denomination kinds-of-coins)  
+          (cond ((= kinds-of-coins 1) 1)  
+                ((= kinds-of-coins 2) 5)  
+                ((= kinds-of-coins 3) 10)  
+                ((= kinds-of-coins 4) 25)  
+                ((= kinds-of-coins 5) 50)))  
+        ```  
+          
+        (The `first-denomination` procedure takes as input the number of kinds of coins available and returns the denomination of the first kind. Here we are thinking of the coins as arranged in order from largest to smallest, but any order would do as well.) We can now answer our original question about changing a dollar:   
+          
+        ```lisp  
+        (count-change 100)  
+        ;_292_   
+        ```  
+          
+        `Count-change` generates a tree-recursive process with redundancies similar to those in our first implementation of fib. (It will take quite a while for that 292 to be computed.) On the other hand, it is not obvious how to design a better algorithm for computing the result, and we leave this problem as a challenge. The observation that a tree-recursive process may be highly inefficient but often easy to specify and understand has led people to propose that one could get the best of both worlds by designing a ‘‘smart compiler’’ that could transform tree-recursive procedures into more efficient procedures that compute the same result.  
+  
 [1]: https://en.wikipedia.org/wiki/Hal_Abelson  
 [2]: https://en.wikipedia.org/wiki/Gerald_Jay_Sussman  
 [3]: hhu.png  
@@ -724,3 +846,9 @@
 [12]: sxj.png  
 [13]: iwk.png  
 [14]: https://github.com/mengsince1986/SICP/blob/master/SICP%20Exercises/exercise%201.9-1.10.scm  
+[15]: qhe.png  
+[16]: wjg.png  
+[17]: kda.png  
+[18]: cka.png  
+[19]: bgb.png  
+[20]: https://stackoverflow.com/questions/27803152/sicp-example-counting-change-cannot-understand  
