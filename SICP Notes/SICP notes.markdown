@@ -832,6 +832,12 @@
           
         `Count-change` generates a tree-recursive process with redundancies similar to those in our first implementation of fib. (It will take quite a while for that 292 to be computed.) On the other hand, it is not obvious how to design a better algorithm for computing the result, and we leave this problem as a challenge. The observation that a tree-recursive process may be highly inefficient but often easy to specify and understand has led people to propose that one could get the best of both worlds by designing a ‘‘smart compiler’’ that could transform tree-recursive procedures into more efficient procedures that compute the same result.  
   
+    * Exercise 1.11-1.13  
+          
+        Solutions: [github.com/mengsince1986/SICP/blob/master/SICP Exercises/exercise 1.11-1.13.scm][22]  
+          
+        Reference: [stackoverflow.com/questions/2365993/no-idea-how-to-solve-sicp-exercise-1-11][21]  
+  
 [1]: https://en.wikipedia.org/wiki/Hal_Abelson  
 [2]: https://en.wikipedia.org/wiki/Gerald_Jay_Sussman  
 [3]: hhu.png  
@@ -852,3 +858,5 @@
 [18]: cka.png  
 [19]: bgb.png  
 [20]: https://stackoverflow.com/questions/27803152/sicp-example-counting-change-cannot-understand  
+[21]: https://stackoverflow.com/questions/2365993/no-idea-how-to-solve-sicp-exercise-1-11  
+[22]: https://github.com/mengsince1986/SICP/blob/master/SICP%20Exercises/exercise%201.11-1.13.scm  
